@@ -2,13 +2,6 @@ package domain
 
 import "time"
 
-type Storage struct {
-	order Order
-	del   Delivery
-	pay   Payment
-	item  Items
-}
-
 type Order struct {
 	OrderUid          string    `json:"order_uid"`
 	TrackNumber       string    `json:"track_number"`
@@ -20,7 +13,7 @@ type Order struct {
 	Shardkey          string    `json:"shardkey"`
 	SmId              int       `json:"sm_id"`
 	DateCreated       time.Time `json:"date_created"`
-	OofShard          string    `json:"oof_shard"`
+	OffShard          string    `json:"oof_shard"`
 }
 type Delivery struct {
 	Name    string `json:"name"`

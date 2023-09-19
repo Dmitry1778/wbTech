@@ -3,11 +3,10 @@ package db
 import (
 	"context"
 	"fmt"
+	"github.com/jackc/pgx/v5"
 	"log"
 	"time"
 	"wbTech/cmd/config"
-
-	"github.com/jackc/pgx/v5"
 )
 
 func PostgresConn(ctx context.Context, maxAttempts int, sc config.StorageConfig) (pool *pgx.Conn, err error) {
