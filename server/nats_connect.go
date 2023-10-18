@@ -1,26 +1,23 @@
 package server
 
 import (
+	"context"
 	"github.com/nats-io/stan.go"
 	"log"
 )
 
-func NatsConnectMethod() (err error) {
+type processor interface {
+	Process([]byte) error
+}
+
+func NatsConnectMethod(ctx context.Context, processor processor) (err error) {
 	sc, err := stan.Connect("test-cluster", "test-id", stan.NatsURL(":4444"))
 	if err != nil {
 		log.Fatal("fail to connect:", err)
 	}
 	defer sc.Close()
 
-	err = Publish(sc)
-	if err != nil {
-		panic("Publish method fail:")
-	}
+	Publisher(sc)
 
-	err = Subscribe(sc)
-	if err != nil {
-		panic("Subscribe method fail:")
-	}
-
-	return nil
+	return Subscribe(ctx, sc, processor)
 }

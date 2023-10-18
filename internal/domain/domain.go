@@ -2,29 +2,7 @@ package domain
 
 import "time"
 
-type Order struct {
-	OrderUid          string    `json:"order_uid"`
-	TrackNumber       string    `json:"track_number"`
-	Entry             string    `json:"entry"`
-	Locale            string    `json:"locale"`
-	InternalSignature string    `json:"internal_signature"`
-	CustomerId        string    `json:"customer_id"`
-	DeliveryService   string    `json:"delivery_service"`
-	Shardkey          string    `json:"shardkey"`
-	SmId              int       `json:"sm_id"`
-	DateCreated       time.Time `json:"date_created"`
-	OffShard          string    `json:"oof_shard"`
-}
-type Delivery struct {
-	Name    string `json:"name"`
-	Phone   string `json:"phone"`
-	Zip     string `json:"zip"`
-	City    string `json:"city"`
-	Address string `json:"address"`
-	Region  string `json:"region"`
-	Email   string `json:"email"`
-}
-type Payment struct {
+type NewPayment struct {
 	Transaction  string `json:"transaction"`
 	RequestId    string `json:"request_id"`
 	Currency     string `json:"currency"`
@@ -36,7 +14,18 @@ type Payment struct {
 	GoodsTotal   int    `json:"goods_total"`
 	CustomFee    int    `json:"custom_fee"`
 }
-type Items struct {
+
+type NewDelivery struct {
+	Name    string `json:"name"`
+	Phone   string `json:"phone"`
+	Zip     string `json:"zip"`
+	City    string `json:"city"`
+	Address string `json:"address"`
+	Region  string `json:"region"`
+	Email   string `json:"email"`
+}
+
+type NewItem struct {
 	ChrtId      int    `json:"chrt_id"`
 	TrackNumber string `json:"track_number"`
 	Price       int    `json:"price"`
@@ -48,4 +37,21 @@ type Items struct {
 	NmId        int    `json:"nm_id"`
 	Brand       string `json:"brand"`
 	Status      int    `json:"status"`
+}
+
+type NewOrder struct {
+	OrderUid          string      `json:"order_uid"`
+	TrackNumber       string      `json:"track_number"`
+	Entry             string      `json:"entry"`
+	Locale            string      `json:"locale"`
+	InternalSignature string      `json:"internal_signature"`
+	CustomerId        string      `json:"customer_id"`
+	DeliveryService   string      `json:"delivery_service"`
+	Shardkey          string      `json:"shardkey"`
+	SmId              int         `json:"sm_id"`
+	DateCreated       time.Time   `json:"date_created"`
+	OofShard          string      `json:"oof_shard"`
+	Delivery          NewDelivery `json:"delivery"`
+	Payment           NewPayment  `json:"payment"`
+	Items             NewItem     `json:"items"`
 }

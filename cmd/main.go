@@ -2,46 +2,46 @@ package main
 
 import (
 	"context"
+	"os"
+	"os/signal"
+	"time"
+	"wbTech/api"
 	"wbTech/cmd/config"
 	"wbTech/internal/db"
-	"wbTech/internal/domain"
-	"wbTech/internal/test_db"
 )
-
-type Storage struct {
-	o domain.Order
-	d domain.Delivery
-	p domain.Payment
-	i domain.Items
-}
 
 func main() {
 
 	cfg := config.GetConfig(&config.Config{})
-	//
-	////Building a project
-	//err := server.NatsConnectMethod()
-	//if err != nil {
-	//	panic(err)
-	//}
-
 	dbConn, err := db.PostgresConn(context.Background(), 3, cfg.Storage)
 	if err != nil {
 		panic(err)
 	}
-	database := test_db.NewDB(dbConn)
-	err = database.PutOrder(context.Background(), domain.NewOrder{OrderUid: "sukablet", TrackNumber: "suka blet"})
-	if err != nil {
-		panic(err)
-	}
-	_, err = database.GetOrder(context.Background(), "311123123123")
-	if err != nil {
-		panic(err)
-	}
+	database := db.NewDB(dbConn)
 
-	//newDb := db.NewDB(dbConn)
-	//err = newDb.AddStorage(domain.Order{}, domain.Delivery{}, domain.Payment{}, domain.Items{})
-	//if err != nil {
-	//	panic(err)
-	//}
+	cache := db.NewInit(database)
+
+	//worker := new_order_subsriber.NewWorker(database, cache)
+
+	ctx, cancel := context.WithCancel(context.Background())
+
+	//go func() {
+	//	err = server.NatsConnectMethod(ctx, worker)
+	//	if err != nil {
+	//		panic(err)
+	//	}
+	//}()
+	go func() {
+		api.NewApi(ctx, cache)
+	}()
+
+	osExit := make(chan os.Signal, 1)
+	exitOnSignal(osExit)
+	<-osExit
+	cancel()
+	time.Sleep(10 * time.Second)
+
+}
+func exitOnSignal(osExit chan os.Signal) {
+	signal.Notify(osExit, os.Interrupt, os.Kill)
 }

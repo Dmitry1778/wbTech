@@ -1,24 +1,34 @@
 package server
 
 import (
+	"context"
 	"fmt"
 	"github.com/nats-io/stan.go"
 	"log"
-	"time"
 )
 
-//type Subscriber struct {
-//	sc *stan.Conn
-//}
-
-func Subscribe(s stan.Conn) (err error) {
+func Subscribe(ctx context.Context, s stan.Conn, p processor) (err error) {
 	sub, err := s.Subscribe("MessengerFoo", func(msg *stan.Msg) {
-		fmt.Printf("Message: %s\n", string(msg.Data))
+		err = p.Process(msg.Data)
+		if err != nil {
+			panic(err.Error())
+		}
 	}, stan.DeliverAllAvailable())
 	if err != nil {
 		log.Fatal("message not received:", err)
 	}
-	defer sub.Unsubscribe()
-	time.Sleep(5 * time.Second)
-	return nil
+
+	for {
+		select {
+		case <-ctx.Done():
+			fmt.Println("context done, exit...")
+			err = sub.Unsubscribe()
+			if err != nil {
+				return err
+			}
+			return ctx.Err() // context canceled
+		default:
+			fmt.Println("123")
+		}
+	}
 }
